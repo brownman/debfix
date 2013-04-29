@@ -228,6 +228,7 @@ def _apt_install_packages(marked, second_time_around=False):
           '&& wget http://download.virtualbox.org/virtualbox/{version}/Oracle_VM_VirtualBox_Extension_Pack-{version}.vbox-extpack '
           '&& VBoxManage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-{version}.vbox-extpack'.format(version=version))
     except AttributeError:
+      log.warn('VBox extension pack failed to install. Please install it manually.')
       
 
 def do_10_install_packages():
