@@ -221,10 +221,14 @@ def _apt_install_packages(marked, second_time_around=False):
   if marked['remove']: run('aptitude -y -q purge ' + marked['remove'])
   # POST
   if 'virtualbox' in marked['sections']:
-    version = re.search('^[0-9]+\.[0-9]+\.[0-9]+', run('VBoxManage -v', pipe=True).split('\n')[-2]).group()
-    run('cd /tmp '  # TODO: see Skype TODO
-        '&& wget http://download.virtualbox.org/virtualbox/{version}/Oracle_VM_VirtualBox_Extension_Pack-{version}.vbox-extpack '
-        '&& VBoxManage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-{version}.vbox-extpack'.format(version=version))
+    try:
+      # this regex fails until vboxdrv is properly installed
+      version = re.search('^[0-9]+\.[0-9]+\.[0-9]+', run('VBoxManage -v', pipe=True).split('\n')[-2]).group()
+      run('cd /tmp '
+          '&& wget http://download.virtualbox.org/virtualbox/{version}/Oracle_VM_VirtualBox_Extension_Pack-{version}.vbox-extpack '
+          '&& VBoxManage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-{version}.vbox-extpack'.format(version=version))
+    except AttributeError:
+      
 
 def do_10_install_packages():
   """Install or remove packages (as per debfix/debfix-packages.conf"""
@@ -235,6 +239,8 @@ def do_10_install_packages():
   run('apt-get -y -q update')
   run('apt-get -y -q --allow-unauthenticated install aptitude debian-archive-keyring deb-multimedia-keyring')
   run('apt-get -y -q update')
+  if user_choice('Upgrade all upgradable packages'):
+    run('aptitude -y -q full-upgrade')
   marked = {'install':'', 'remove':'', 'sections':''}
   for section in sections:
     question = "{} packages from '{}' section".format('Install' if section != 'remove' else 'Remove', section)
@@ -255,8 +261,6 @@ def do_10_install_packages():
     _apt_install_packages(marked)
     # due to assume-yes-based decisions, some packages may not be successfully installed (yet), retry
     _apt_install_packages(marked, second_time_around=True)
-  if user_choice('Upgrade all upgradable packages'):
-    run('aptitude -y -q full-upgrade')
   run('aptitude -y -q clean')
   log.info('Done installing packages')
 
