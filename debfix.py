@@ -122,7 +122,7 @@ def do_set_noatime_in_fstab_mounts():
   """Filesystems may make **SEVERAL DIRK WRITES FOR EACH READ** operation
 as they update the access times of files and their parent directories!
 Setting 'noatime' flag on mount points may thus increase disk performace.
-Set 'noatime' flag on all mounts defined in /etc/fstab"""
+Set 'noatime' flag on all non-tmpfs mounts defined in /etc/fstab"""
   newfstab = []
   with open('/etc/fstab') as fstab:
     for line in fstab:
@@ -131,11 +131,12 @@ Set 'noatime' flag on all mounts defined in /etc/fstab"""
         newfstab.append(line)
         continue
       line = list(match.groups())
-      if 'noatime' not in line[3]: line[3] += ',noatime'
+      if line[0] != 'tmpfs' and 'noatime' not in line[3]:
+        line[3] += ',noatime'
       newfstab.append('\t'.join(line) + '\n')
   with open('/etc/fstab', 'w') as fstab:
     fstab.write(''.join(newfstab) + '\n')
-  log.info("'noatime' flag added to ALL mounts in /etc/fstab")
+  log.info("'noatime' flag added to non-tmpfs mounts in /etc/fstab")
 
 def do_add_tmpfs_mount_to_fstab():
   """Firefox may store partly downloaded files/YouTube videos to /tmp.
