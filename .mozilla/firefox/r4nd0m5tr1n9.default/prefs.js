@@ -123,7 +123,7 @@ user_pref("keyconfig.main.viewBookmarksSidebarKb", "!][][");
 user_pref("keyconfig.main.web-developer-view-response-headers-key", "control shift][H][");
 user_pref("keyconfig.main.webdeveloper-disable-styles-key", "!][][");
 
-user_pref("keyword.URL", "https://www.google.com/search?q=");
+user_pref("keyword.URL", "https://www.google.com/search?btnI=&q=");
 user_pref("network.cookie.prefsMigrated", true);
 user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, .google.com, .gmail.com");
 
